@@ -16,6 +16,10 @@ void JxDomeRotation::setupMotor(MODE mode, uint8_t pin1, uint8_t pin2)
     _motor->setSpeed(_speed);
 }
 
+void JxDomeRotation::setCurrentPositionAsFront(){
+
+}
+
 void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t maxSpeed)
 {
     if (value >= _inputMin && value <= _inputMax)

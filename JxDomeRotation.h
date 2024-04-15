@@ -14,6 +14,7 @@ public:
 
     void setupMotor(MODE mode, uint8_t pin1, uint8_t pin2);
 
+    void setCurrentPositionAsFront();
     void updateMotorWith(int16_t value, uint16_t deadPoint, int16_t maxSpeed = 255);
     void stop();
 
