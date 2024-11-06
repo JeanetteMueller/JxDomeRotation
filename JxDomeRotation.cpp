@@ -2,9 +2,9 @@
 
 JxDomeRotation::JxDomeRotation(int16_t inputMin, int16_t inputMax, int16_t inputCenter, uint32_t analogFrequency)
 {
-  #ifdef ESP8266
+#ifdef ESP8266
     analogWriteFreq(analogFrequency);
-  #endif
+#endif
 
     _inputMin = inputMin;
     _inputMax = inputMax;
@@ -24,7 +24,7 @@ void JxDomeRotation::setupMotor(MODE mode, uint8_t pin1, uint8_t pin2)
     }
 }
 
-void JxDomeRotation::setupMotor(Adafruit_PWMServoDriver pwm, uint8_t pinDir, uint8_t pinPwm)
+void JxDomeRotation::setupMotor(Adafruit_PWMServoDriver *pwm, uint8_t pinDir, uint8_t pinPwm)
 {
     if (_isReady != true)
     {
@@ -65,15 +65,15 @@ void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t 
             {
                 uint16_t rotationSpeed = map(value, _inputCenter, _inputMax, 0, 4095);
 
-                _pwm.setPWM(_pinDir, 0, 4095);
-                _pwm.setPWM(_pinPwm, 0, rotationSpeed);
+                _pwm->setPWM(_pinDir, 0, 4095);
+                _pwm->setPWM(_pinPwm, 0, rotationSpeed);
             }
             else if (value < _inputCenter)
             {
                 uint16_t rotationSpeed = map(value, _inputMin, _inputCenter, 4095, 0);
 
-                _pwm.setPWM(_pinDir, 0, 0);
-                _pwm.setPWM(_pinPwm, 0, rotationSpeed);
+                _pwm->setPWM(_pinDir, 0, 0);
+                _pwm->setPWM(_pinPwm, 0, rotationSpeed);
             }
         }
     }
@@ -85,8 +85,8 @@ void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t 
         }
         else if (_currentMotorType == PWMServoDriver)
         {
-            _pwm.setPWM(_pinDir, 0, 0);
-            _pwm.setPWM(_pinPwm, 0, 0);
+            _pwm->setPWM(_pinDir, 0, 0);
+            _pwm->setPWM(_pinPwm, 0, 0);
         }
     }
 }
