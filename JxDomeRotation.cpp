@@ -11,11 +11,16 @@ JxDomeRotation::JxDomeRotation(int16_t inputMin, int16_t inputMax, int16_t input
     _inputCenter = inputCenter;
 }
 
-void JxDomeRotation::setupMotor(MODE mode, uint8_t pin1, uint8_t pin2)
+void JxDomeRotation::setupMotor(MODE mode, uint8_t pin1, uint8_t pin2, uint8_t channel, uint8_t resolution, uint32_t frequency)
 {
     if (_isReady != true)
     {
+#if defined(ESP32)
+        _motor = new CytronMD(mode, pin1, pin2, channel, frequency, resolution);
+#elif defined(ESP8266)
         _motor = new CytronMD(mode, pin1, pin2);
+#endif
+
         _speed = 0;
         _motor->setSpeed(_speed);
 
@@ -39,22 +44,35 @@ void JxDomeRotation::setupMotor(Adafruit_PWMServoDriver *pwm, uint8_t pinDir, ui
 
 void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t maxSpeed)
 {
+    int16_t speed = constrain(value, _inputMin, _inputMax);
     if (value >= _inputCenter + deadPoint || value <= _inputCenter - deadPoint)
     {
         if (_currentMotorType == Direct)
         {
             // update via Motordriver pins
 
-            if (value >= _inputCenter + deadPoint)
+            int16_t rotationSpeed = 0;
+            if (speed < _inputCenter - deadPoint || speed > _inputCenter + deadPoint)
             {
-                int16_t rotationSpeed = map(value - deadPoint, _inputCenter, _inputMax - deadPoint, maxSpeed, -(maxSpeed));
+
+                if (speed < _inputCenter - deadPoint){
+                    rotationSpeed = map(speed, _inputMin, _inputCenter - deadPoint, -maxSpeed, 0);
+                }else if (speed > _inputCenter + deadPoint) {
+                    rotationSpeed = map(speed, _inputCenter + deadPoint, _inputMax, 0, maxSpeed);
+                }
+
+                
+                rotationSpeed = constrain(rotationSpeed, -(maxSpeed), maxSpeed);
+
+                Serial.print("set dome rotation value: ");
+                Serial.print(speed);
+                Serial.print("           new value ");
+                Serial.println(rotationSpeed);
 
                 _motor->setSpeed(rotationSpeed);
             }
-            else if (value <= _inputCenter - deadPoint)
+            else
             {
-                int16_t rotationSpeed = map(value + deadPoint, _inputMin + deadPoint, _inputCenter, maxSpeed, -(maxSpeed));
-
                 _motor->setSpeed(rotationSpeed);
             }
         }

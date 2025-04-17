@@ -24,7 +24,7 @@ public:
 
     JxDomeRotation(int16_t inputMin, int16_t inputMax, int16_t inputCenter, uint32_t analogFrequenc = 18000);
 
-    void setupMotor(MODE mode, uint8_t pin1, uint8_t pin2);
+    void setupMotor(MODE mode, uint8_t pin1, uint8_t pin2, uint8_t channel = 3, uint8_t resolution = 10, uint32_t frequency = 20000);
     void setupMotor(Adafruit_PWMServoDriver *pwm, uint8_t pinDir, uint8_t pinPwm);
 
     void updateMotorWith(int16_t value, uint16_t deadPoint, int16_t maxSpeed = 255);
