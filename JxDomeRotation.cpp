@@ -50,25 +50,19 @@ void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t 
         if (_currentMotorType == Direct)
         {
             // update via Motordriver pins
-
             int16_t rotationSpeed = 0;
             if (speed < _inputCenter - deadPoint || speed > _inputCenter + deadPoint)
             {
-
-                if (speed < _inputCenter - deadPoint){
+                if (speed < _inputCenter - deadPoint)
+                {
                     rotationSpeed = map(speed, _inputMin, _inputCenter - deadPoint, -maxSpeed, 0);
-                }else if (speed > _inputCenter + deadPoint) {
+                }
+                else if (speed > _inputCenter + deadPoint)
+                {
                     rotationSpeed = map(speed, _inputCenter + deadPoint, _inputMax, 0, maxSpeed);
                 }
 
-                
                 rotationSpeed = constrain(rotationSpeed, -(maxSpeed), maxSpeed);
-
-                Serial.print("set dome rotation value: ");
-                Serial.print(speed);
-                Serial.print("           new value ");
-                Serial.println(rotationSpeed);
-
                 _motor->setSpeed(rotationSpeed);
             }
             else
@@ -79,16 +73,17 @@ void JxDomeRotation::updateMotorWith(int16_t value, uint16_t deadPoint, int16_t 
         else if (_currentMotorType == PWMServoDriver)
         {
             // update via PWM
+            uint16_t rotationSpeed = 0;
             if (value > _inputCenter)
             {
-                uint16_t rotationSpeed = map(value, _inputCenter, _inputMax, 0, 4095);
+                rotationSpeed = map(value, _inputCenter, _inputMax, 0, 4095);
 
                 _pwm->setPWM(_pinDir, 0, 4095);
                 _pwm->setPWM(_pinPwm, 0, rotationSpeed);
             }
             else if (value < _inputCenter)
             {
-                uint16_t rotationSpeed = map(value, _inputMin, _inputCenter, 4095, 0);
+                rotationSpeed = map(value, _inputMin, _inputCenter, 4095, 0);
 
                 _pwm->setPWM(_pinDir, 0, 0);
                 _pwm->setPWM(_pinPwm, 0, rotationSpeed);
